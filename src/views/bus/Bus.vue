@@ -5,9 +5,9 @@
                 <div>
                     <router-link :to="{ name: 'home' }"
                         class="inline-block shadow-sm py-2 px-4 text-gray-500 bg-gray-100 rounded-t-md text-sm border-gray-200 border">Home</router-link>
-                    <!-- <router-link :to="{name:'bus.create'}"
+                    <router-link :to="{ name: 'bus.add' }"
                         class="inline-block shadow-sm py-2 px-4 text-blue-500 bg-blue-100 rounded-t-md text-sm border-blue-200 border">Buat
-                        baru</router-link> -->
+                        baru</router-link>
                 </div>
                 <!-- <div v-if="typeof buses.data != 'undefined'">
                     <div class="flex items-center justify-center space-x-1 mx-auto">
@@ -41,30 +41,24 @@
                                             class="font-semibold text-gray-900 dark:text-white">1000</span></span>
                                     <ul class="inline-flex items-center -space-x-px">
                                         <li>
-                                            <a href="#" v-if="buses.prev_page_url != null"
+                                            <button href="#" :disabled="buses.prev_page_url == null" :class="{
+                                                'cursor-not-allowed': buses.prev_page_url == null,
+                                                'hover:bg-blue-100 hover:text-white': buses.prev_page_url != null
+                                            }"
                                                 @click="$event.preventDefault(); _fetchDataBuses(buses.prev_page_url, null)"
-                                                class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                                <span class="sr-only">Previous</span>
-                                                <svg class="w-5 h-5" aria-hidden="true" fill="currentColor"
-                                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd"
-                                                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                                        clip-rule="evenodd"></path>
-                                                </svg>
-                                            </a>
+                                                class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg  dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                                Prev
+                                            </button>
                                         </li>
                                         <li>
-                                            <a href="#" v-if="buses.next_page_url != null"
+                                            <button href="#" :disabled="buses.next_page_url == null" :class="{
+                                                'cursor-not-allowed': buses.next_page_url == null,
+                                                'hover:bg-blue-100 hover:text-white': buses.next_page_url != null
+                                            }"
                                                 @click="$event.preventDefault(); _fetchDataBuses(null, buses.next_page_url)"
-                                                class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                                <span class="sr-only">Next</span>
-                                                <svg class="w-5 h-5" aria-hidden="true" fill="currentColor"
-                                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd"
-                                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                                        clip-rule="evenodd"></path>
-                                                </svg>
-                                            </a>
+                                                class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg  dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                                Next
+                                            </button>
                                         </li>
                                     </ul>
                                 </nav>
@@ -141,9 +135,11 @@
                                             <td class="px-6 py-4">
                                                 {{ bus.ukuran }} Kursi
                                             </td>
-                                            <td class="px-6 py-4 text-right">
-                                                <a href="#"
-                                                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                            <td class="px-6 py-4 text-right flex space-x-2">
+                                                <router-link :to="{ name: 'bus.edit', params: { id: bus.id } }"
+                                                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</router-link>
+                                                <button @click="_deleteBusData(bus.id)"
+                                                    class="font-medium text-red-600 dark:text-blue-500 hover:underline">Delete</button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -164,13 +160,24 @@ export default {
         ...mapState('bus', ['buses'])
     },
     methods: {
-        ...mapActions('bus', ['fetchDataBuses']),
+        ...mapActions('bus', ['fetchDataBuses', 'deleteBusData']),
         async _fetchDataBuses(prev, next) {
             try {
                 await this.fetchDataBuses({
                     prev: prev,
                     next: next
                 })
+            } catch (e) {
+                alert(e)
+            }
+        },
+        async _deleteBusData(busId) {
+            try {
+                if (!confirm("Are you sure")) {
+                    return false
+                }
+                await this.deleteBusData(busId)
+                this._fetchDataBuses(null, null)
             } catch (e) {
                 alert(e)
             }
