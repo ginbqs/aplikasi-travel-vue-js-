@@ -1,5 +1,7 @@
 # management-bus-vue
 
+![ss index](https://github.com/ginbqs/latihanvue-buskoe/blob/master/ss%20index.png)
+
 ## Project setup
 ```
 yarn install
