@@ -1,14 +1,18 @@
-import Vue from 'vue'
-import App from './App.vue'
-import './registerServiceWorker'
-import router from './router'
-import store from './store'
 import './assets/css/index.css'
 
-Vue.config.productionTip = false
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 
-new Vue({
-  router,
-  store,
-  render: h => h(App)
-}).$mount('#app')
+import App from './App.vue'
+import router from './router'
+
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+
+const app = createApp(App)
+
+app.use(createPinia())
+app.use(router)
+app.use(VueSweetalert2);
+
+app.mount('#app')
